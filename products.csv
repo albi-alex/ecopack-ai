@@ -1,0 +1,15 @@
+product_type,fragility,weight,category
+mobile,high,0.5,electronics
+laptop,high,2,electronics
+tv,high,5,electronics
+pizza,low,1,food
+cake,medium,1.2,food
+perfume,high,0.3,cosmetics
+cream,medium,0.2,cosmetics
+bottle ,low,1.5,food
+jar,low,1.2,food
+tablet,high,0.4,electronics
+mobile,high,0.6,electronics
+cake,low,1.5,food
+tablet,high,0.7,electronics
+jar,low,1.5,food

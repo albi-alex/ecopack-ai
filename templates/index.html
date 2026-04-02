@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EcoPack AI</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            background: linear-gradient(to right, #d4fc79, #96e6a1);
+        }
+    </style>
+</head>
+
+<body class="text-center">
+
+<div class="container mt-5">
+
+    <h1>EcoPack AI 🌱</h1>
+
+    <div class="card p-4 shadow">
+
+        <form action="/predict_form" method="post">
+
+            <label><b>Product Type</b></label>
+            <select name="product" class="form-control mb-3" required>
+                <option value="">Select Product</option>
+                <option value="food">Food Packaging</option>
+                <option value="electronics">Electronics</option>
+                <option value="cosmetics">Cosmetics</option>
+                <option value="fragile">Fragile Items</option>
+                <option value="general">General Goods</option>
+            </select>
+
+            <label><b>Fragility</b></label>
+            <select name="fragility" class="form-control mb-3" required>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+            </select>
+
+            <label><b>Weight</b></label>
+            <select name="weight" class="form-control mb-3" required>
+                <option value="light">Light</option>
+                <option value="medium">Medium</option>
+                <option value="heavy">Heavy</option>
+            </select>
+
+            <label><b>Protection Required</b></label>
+            <select name="protection" class="form-control mb-3" required>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+            </select>
+
+            <button class="btn btn-success w-100">Get Recommendation</button>
+        </form>
+    </div>
+
+    {% if results %}
+
+    <h3 class="mt-4">Top Materials</h3>
+
+    <table class="table table-bordered">
+        <tr>
+            <th>Material</th>
+            <th>Score</th>
+            <th>Eco</th>
+        </tr>
+        {% for r in results %}
+        <tr>
+            <td>{{ r.material }}</td>
+            <td>{{ r.score }}</td>
+            <td>{{ r.eco }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h4>Business Insights 📊</h4>
+    <p><b>CO₂ Reduction:</b> {{ co2 }}%</p>
+    <p><b>Cost Savings:</b> {{ cost }}%</p>
+
+    <div class="row">
+        <div class="col-md-4"><canvas id="barChart"></canvas></div>
+        <div class="col-md-4"><canvas id="pieChart"></canvas></div>
+        <div class="col-md-4"><canvas id="trendChart"></canvas></div>
+    </div>
+
+    <script>
+        let resultsData = JSON.parse('{{ results | tojson | safe }}');
+
+        let labels = resultsData.map(r => r.material);
+        let scores = resultsData.map(r => r.score);
+
+        new Chart(barChart, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{ data: scores }]
+            },
+            options: { plugins: { title: { display: true, text: 'Material Comparison' } } }
+        });
+
+        new Chart(pieChart, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{ data: scores }]
+            },
+            options: { plugins: { title: { display: true, text: 'Material Distribution' } } }
+        });
+
+        new Chart(trendChart, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{ data: scores }]
+            },
+            options: { plugins: { title: { display: true, text: 'Material Trend' } } }
+        });
+    </script>
+
+    <a href="/export_excel" class="btn btn-primary mt-3">Export Excel</a>
+    <a href="/export_pdf" class="btn btn-danger mt-3">Export PDF</a>
+
+    {% endif %}
+
+</div>
+
+</body>
+</html>
