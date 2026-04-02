@@ -7,7 +7,7 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph
 app = Flask(__name__)
 
 # Load ML model
-model = pickle.load(open("D:/ECOPACKAI_ML1/model.pkl", "rb"))
+model = pickle.load(open("model.pkl", "rb"))
 
 # Store latest results
 latest_results = []
