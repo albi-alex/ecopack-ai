@@ -2,8 +2,16 @@ from flask import Flask, render_template, request, send_file
 import pandas as pd
 import io
 import os
+import psycopg2
 
 app = Flask(__name__)
+# =========================
+# DATABASE CONNECTION
+# =========================
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+conn = psycopg2.connect(DATABASE_URL)
+cursor = conn.cursor()
 
 # 🔥 Smart Recommendation Logic
 def get_recommendations(product, fragility, weight, protection):
