@@ -5,6 +5,7 @@ import os
 import psycopg2
 
 app = Flask(__name__)
+
 # =========================
 # DATABASE CONNECTION
 # =========================
@@ -12,6 +13,7 @@ DATABASE_URL = os.environ.get("DATABASE_URL")
 
 conn = psycopg2.connect(DATABASE_URL)
 cursor = conn.cursor()
+
 
 # 🔥 Smart Recommendation Logic
 def get_recommendations(product, fragility, weight, protection):
@@ -51,9 +53,23 @@ def predict_form():
     weight = request.form['weight']
     protection = request.form['protection']
 
+    # =========================
+    # 🔥 SAVE TO DATABASE (NEW PART)
+    # =========================
+    try:
+        cursor.execute(
+            "INSERT INTO user_logs (product, fragility, weight, protection) VALUES (%s, %s, %s, %s)",
+            (product, fragility, weight, protection)
+        )
+        conn.commit()
+    except Exception as e:
+        print("DB Error:", e)
+
+    # =========================
+    # YOUR EXISTING LOGIC
+    # =========================
     results = get_recommendations(product, fragility, weight, protection)
 
-    # Dummy insights (can upgrade later)
     co2 = 30
     cost = 20
 
@@ -90,13 +106,13 @@ def export_excel():
     )
 
 
-# 🚧 PDF (disabled for now to avoid crash)
+# 🚧 PDF (disabled for now)
 @app.route('/export_pdf')
 def export_pdf():
     return "PDF feature coming soon 🚧"
 
 
-# 🚀 IMPORTANT FOR RENDER DEPLOYMENT
+# 🚀 IMPORTANT FOR RENDER
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
