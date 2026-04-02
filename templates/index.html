@@ -93,31 +93,19 @@
         let labels = resultsData.map(r => r.material);
         let scores = resultsData.map(r => r.score);
 
-        new Chart(barChart, {
+        new Chart(document.getElementById("barChart"), {
             type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{ data: scores }]
-            },
-            options: { plugins: { title: { display: true, text: 'Material Comparison' } } }
+            data: { labels: labels, datasets: [{ data: scores }] }
         });
 
-        new Chart(pieChart, {
+        new Chart(document.getElementById("pieChart"), {
             type: 'pie',
-            data: {
-                labels: labels,
-                datasets: [{ data: scores }]
-            },
-            options: { plugins: { title: { display: true, text: 'Material Distribution' } } }
+            data: { labels: labels, datasets: [{ data: scores }] }
         });
 
-        new Chart(trendChart, {
+        new Chart(document.getElementById("trendChart"), {
             type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{ data: scores }]
-            },
-            options: { plugins: { title: { display: true, text: 'Material Trend' } } }
+            data: { labels: labels, datasets: [{ data: scores }] }
         });
     </script>
 
