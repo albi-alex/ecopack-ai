@@ -46,6 +46,7 @@ def home():
 # 🔮 Prediction Route
 @app.route('/predict_form', methods=['POST'])
 def predict_form():
+    print("🔥 FORM SUBMITTED")
 
     product = request.form['product']
     fragility = request.form['fragility']
