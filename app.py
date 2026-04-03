@@ -11,9 +11,11 @@ app = Flask(__name__)
 # =========================
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
-conn = psycopg2.connect(DATABASE_URL)
-cursor = conn.cursor()
-
+def get_db_connection():
+    return psycopg2.connect(
+        DATABASE_URL,
+        sslmode='require'
+    )
 
 # 🔥 Smart Recommendation Logic
 def get_recommendations(product, fragility, weight, protection):
@@ -26,7 +28,6 @@ def get_recommendations(product, fragility, weight, protection):
         {"material": "Foam", "score": 3}
     ]
 
-    # ✅ Smart Eco Calculation
     for m in materials:
         if m["score"] >= 8:
             m["eco"] = "High"
@@ -37,12 +38,10 @@ def get_recommendations(product, fragility, weight, protection):
 
     return materials
 
-
 # 🏠 Home Page
 @app.route('/')
 def home():
     return render_template('index.html')
-
 
 # 🔮 Prediction Route
 @app.route('/predict_form', methods=['POST'])
@@ -53,21 +52,23 @@ def predict_form():
     weight = request.form['weight']
     protection = request.form['protection']
 
-    # =========================
-    # 🔥 SAVE TO DATABASE (NEW PART)
-    # =========================
+    # ✅ SAFE DB INSERT (won’t crash app)
     try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
         cursor.execute(
             "INSERT INTO user_logs (product, fragility, weight, protection) VALUES (%s, %s, %s, %s)",
             (product, fragility, weight, protection)
         )
+
         conn.commit()
+        cursor.close()
+        conn.close()
+
     except Exception as e:
         print("DB Error:", e)
 
-    # =========================
-    # YOUR EXISTING LOGIC
-    # =========================
     results = get_recommendations(product, fragility, weight, protection)
 
     co2 = 30
@@ -79,7 +80,6 @@ def predict_form():
         co2=co2,
         cost=cost
     )
-
 
 # 📊 Export Excel
 @app.route('/export_excel')
@@ -105,14 +105,12 @@ def export_excel():
         as_attachment=True
     )
 
-
-# 🚧 PDF (disabled for now)
+# 🚧 PDF (disabled)
 @app.route('/export_pdf')
 def export_pdf():
     return "PDF feature coming soon 🚧"
 
-
-# 🚀 IMPORTANT FOR RENDER
+# 🚀 REQUIRED FOR RENDER
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
